@@ -9,12 +9,12 @@ trimmedFastq_log_dir=${file_path}/logs/trimmeddata
 trimmed_fastqc_dir=${file_path}/02_trimmed_fastqc
 align_exp_dir=${file_path}/03_bam_hg19
 alignexp_log_dir=${file_path}/logs/align_hg19
-align_spike_dir=${file_path}/03_spikebam_dm3
-alignspike_log_dir=${file_path}/logs/align_dm3
+align_spike_dir=${file_path}/03_spikebam_ecoli
+alignspike_log_dir=${file_path}/logs/align_ecoli
 exp_bam_rmdup=${file_path}/03_bam_hg19_rmdup
 rmdup_exp_log=${file_path}/logs/rmdup_state_hg19
-spike_bam_rmdup=${file_path}/03_spikebam_dm3_rmdup
-rmdup_spike_log=${file_path}/logs/rmdup_state_dm3
+spike_bam_rmdup=${file_path}/03_spikebam_ecoli_rmdup
+rmdup_spike_log=${file_path}/logs/rmdup_state_ecoli
 bw_dir=${file_path}/04_bw_rmdup
 sampleinfo=${file_path}/sample_info.txt
 sample_spikeinfo_dir=${file_path}/Pair_input_IP
@@ -22,8 +22,8 @@ sample_spikeinfo_dir=${file_path}/Pair_input_IP
 
 #reference genome
 GENOME_EXP="/share/home/Blueberry/reference/index/bowtie2/hg19/hg19"
-GENOME_SPIKE="/share/home/Lemon/index/bowtie2-dm3/dm3"
-SPIKE_PREFIX="dm3"
+GENOME_SPIKE="/share/home/Lemon/index/bowtie2-ecoli/Ecoli"
+SPIKE_PREFIX="ecoli"
 
 MAPQ=10
 
@@ -143,7 +143,7 @@ mkdir -p ${alignspike_log_dir}
 
 for PAIR in $(ls ${trimmedFastq_dir} | sed 's/_R[1-2].*//' | sort | uniq )
 do
-if [ ! -s "${align_spike_dir}/${PAIR}_dm3.bam" ]
+if [ ! -s "${align_spike_dir}/${PAIR}_ecoli.bam" ]
     then
     echo "aligning ${PAIR} to spike-in genome"
     (bowtie2 \
@@ -160,10 +160,10 @@ if [ ! -s "${align_spike_dir}/${PAIR}_dm3.bam" ]
     -I 10 -X 700 \
     -1 "${trimmedFastq_dir}/${PAIR}_R1_val_1.fq.gz" \
     -2 "${trimmedFastq_dir}/${PAIR}_R2_val_2.fq.gz" \
-    2> ${alignspike_log_dir}/${PAIR}_dm3Align.log) |
+    2> ${alignspike_log_dir}/${PAIR}_ecoliAlign.log) |
     samtools view -bS -f 2 -q ${MAPQ} |
-    samtools sort -@ 20 -o ${align_spike_dir}/${PAIR}_dm3.bam
-    samtools index ${align_spike_dir}/${PAIR}_dm3.bam
+    samtools sort -@ 20 -o ${align_spike_dir}/${PAIR}_ecoli.bam
+    samtools index ${align_spike_dir}/${PAIR}_ecoli.bam
 fi
 done
 
